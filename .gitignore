@@ -38,6 +38,9 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# Supabase utility scripts (may contain credentials)
+supabase/create-test-user.js
+
 # generated native folders
 /ios
 /android
