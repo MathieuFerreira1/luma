@@ -44,26 +44,9 @@ interface LessonState {
   fetchLessons: () => Promise<void>;
   fetchLessonById: (id: string) => Promise<Lesson | null>;
   setCurrentLesson: (lesson: Lesson | null) => void;
-  completeLesson: (lessonId: string) => void;
+  completeLesson: (lessonId: string, xpEarned: number) => Promise<any>;
   lessonsByCategory: Record<string, Lesson[]>;
 }
-
-const mapLessonFromSupabase = (row: any): Lesson => ({
-  id: row.id,
-  category: {
-    id: row.category_id,
-    name: row.categories?.name || 'Unknown',
-    color: row.categories?.color || '#6E6AE8',
-  },
-  title: row.title,
-  hook: row.hook,
-  description: row.description || '',
-  difficulty: row.difficulty,  
-  duration: row.estimated_time,
-  xpReward: row.xp_reward,
-  blocks: row.blocks || [],
-  quiz: [], // Will be fetched separately
-});
 
 export const useLessonStore = create<LessonState>((set, get) => ({
   currentLesson: null,
@@ -81,24 +64,22 @@ export const useLessonStore = create<LessonState>((set, get) => ({
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
-
-      const categories = data.map(cat => ({
+      const categories = data.map((cat) => ({
         id: cat.id,
         name: cat.name,
         color: cat.color,
       }));
-
       set({ categories });
-    } catch (error: any) {
-      console.error('Error fetching categories:', error);
-      set({ error: error.message });
+    } catch (err: any) {
+      console.error('Error fetching categories:', err);
+      set({ error: err.message });
     }
   },
 
   fetchLessons: async () => {
     set({ isLoading: true, error: null });
     try {
-      // Fetch lessons with their categories
+      // Fetch lessons with categories
       const { data: lessonsData, error: lessonsError } = await supabase
         .from('lessons')
         .select('*, categories(*)')
@@ -112,7 +93,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
       }
 
       // Fetch quizzes for these lessons
-      const lessonIds = lessonsData.map(l => l.id);
+      const lessonIds = lessonsData.map((l) => l.id);
       const { data: quizzesData, error: quizzesError } = await supabase
         .from('quizzes')
         .select('*')
@@ -121,21 +102,31 @@ export const useLessonStore = create<LessonState>((set, get) => ({
       if (quizzesError) throw quizzesError;
 
       // Map data to our Lesson type
-      const lessons = lessonsData.map(lesson => {
-        const mapped = mapLessonFromSupabase(lesson);
-        // Attach quizzes
-        const lessonQuizzes = (quizzesData || [])
-          .filter(q => q.lesson_id === lesson.id)
-          .sort((a, b) => a.order_index - b.order_index)
-          .map(q => ({
-            id: q.id,
-            question: q.question,
-            options: q.options,
-            correctAnswer: q.correct_answer,
-          }));
-        mapped.quiz = lessonQuizzes;
-        return mapped;
-      });
+      const lessons = lessonsData.map((lesson) => ({
+        id: lesson.id,
+        category: {
+          id: lesson.category_id,
+          name: lesson.categories?.name || 'Unknown',
+          color: lesson.categories?.color || '#6E6AE8',
+        },
+        title: lesson.title,
+        hook: lesson.hook,
+        description: lesson.description || '',
+        difficulty: lesson.difficulty,
+        duration: lesson.estimated_time,
+        xpReward: lesson.xp_reward,
+        blocks: lesson.blocks || [],
+        quiz:
+          (quizzesData || [])
+            .filter((q) => q.lesson_id === lesson.id)
+            .sort((a, b) => a.order_index - b.order_index)
+            .map((q) => ({
+              id: q.id,
+              question: q.question,
+              options: q.options,
+              correctAnswer: q.correct_answer,
+            })),
+      }));
 
       // Build lessonsByCategory
       const lessonsByCategory = lessons.reduce((acc, lesson) => {
@@ -148,9 +139,9 @@ export const useLessonStore = create<LessonState>((set, get) => ({
       }, {} as Record<string, Lesson[]>);
 
       set({ lessons, lessonsByCategory, isLoading: false });
-    } catch (error: any) {
-      console.error('Error fetching lessons:', error);
-      set({ error: error.message, isLoading: false });
+    } catch (err: any) {
+      console.error('Error fetching lessons:', err);
+      set({ error: err.message, isLoading: false });
     }
   },
 
@@ -165,24 +156,36 @@ export const useLessonStore = create<LessonState>((set, get) => ({
       if (error) throw error;
       if (!lessonData) return null;
 
-      const mapped = mapLessonFromSupabase(lessonData);
-
       // Fetch quizzes
       const { data: quizzesData } = await supabase
         .from('quizzes')
         .select('*')
         .eq('lesson_id', id);
 
-      mapped.quiz = (quizzesData || [])
-        .sort((a, b) => a.order_index - b.order_index)
-        .map(q => ({
-          id: q.id,
-          question: q.question,
-          options: q.options,
-          correctAnswer: q.correct_answer,
-        }));
-
-      return mapped;
+      return {
+        id: lessonData.id,
+        category: {
+          id: lessonData.category_id,
+          name: lessonData.categories?.name || 'Unknown',
+          color: lessonData.categories?.color || '#6E6AE8',
+        },
+        title: lessonData.title,
+        hook: lessonData.hook,
+        description: lessonData.description || '',
+        difficulty: lessonData.difficulty,
+        duration: lessonData.estimated_time,
+        xpReward: lessonData.xp_reward,
+        blocks: lessonData.blocks || [],
+        quiz:
+          (quizzesData || [])
+            .sort((a, b) => a.order_index - b.order_index)
+            .map((q) => ({
+              id: q.id,
+              question: q.question,
+              options: q.options,
+              correctAnswer: q.correct_answer,
+            })),
+      };
     } catch (error) {
       console.error('Error fetching lesson:', error);
       return null;
@@ -191,9 +194,33 @@ export const useLessonStore = create<LessonState>((set, get) => ({
 
   setCurrentLesson: (lesson) => set({ currentLesson: lesson }),
 
-  completeLesson: async (lessonId: string) => {
-    console.log(`Lesson ${lessonId} completed`);
-    // TODO: Save to user_progress table via progressionStore
+  completeLesson: async (lessonId: string, xpEarned: number) => {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session?.user) throw new Error('No user');
+
+      const { error } = await supabase.from('user_progress').upsert(
+        {
+          user_id: session.user.id,
+          lesson_id: lessonId,
+          completed: true,
+          completed_at: new Date().toISOString(),
+          xp_earned: xpEarned,
+        },
+        { onConflict: 'user_id,lesson_id' }
+      );
+
+      if (error) throw error;
+
+      // Refresh lessons to update state
+      await get().fetchLessons();
+      return xpEarned;
+    } catch (err: any) {
+      console.error('Error completing lesson:', err);
+      throw err;
+    }
   },
 }));
 
