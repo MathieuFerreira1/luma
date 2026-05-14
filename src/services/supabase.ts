@@ -1,21 +1,24 @@
-import { createClient } from '@supabase/supabase-js';
+import 'react-native-url-polyfill/auto';
+import { createClient, User, Session } from '@supabase/supabase-js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// TODO: Remplacer ces variables par les vôtres
-// Vous trouverez ces informations dans votre dashboard Supabase :
-// 1. Allez sur https://supabase.com/dashboard/project/[votre-project-ref]
-// 2. Dans le menu latéral, cliquez sur "Settings" → "API"
-// 3. Copiez le "URL" et le "anon public" key
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://your-project-ref.supabase.co';
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'your-anon-key';
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Supabase credentials missing. Check your .env file');
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
+    storage: AsyncStorage as any,
   },
 });
+
+export type { User, Session };
 
 // Types pour les tables Supabase
 export type Database = {
@@ -62,11 +65,12 @@ export type Database = {
           category_id: string;
           title: string;
           hook: string;
-          content: string;
+          description: string;
           difficulty: string;
           xp_reward: number;
           order_index: number;
           estimated_time: number;
+          blocks: any[];
         };
       };
       quizzes: {
@@ -74,7 +78,7 @@ export type Database = {
           id: string;
           lesson_id: string;
           question: string;
-          answers: string[];
+          options: string[];
           correct_answer: number;
         };
       };

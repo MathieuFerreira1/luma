@@ -1,12 +1,15 @@
 import { create } from 'zustand';
+import { supabase } from '@/src/services/supabase';
+
+interface Category {
+  id: string;
+  name: string;
+  color: string;
+}
 
 interface Lesson {
   id: string;
-  category: {
-    id: string;
-    name: string;
-    color: string;
-  };
+  category: Category;
   title: string;
   hook: string;
   description: string;
@@ -34,151 +37,164 @@ interface QuizQuestion {
 interface LessonState {
   currentLesson: Lesson | null;
   lessons: Lesson[];
+  categories: Category[];
   isLoading: boolean;
+  error: string | null;
+  fetchCategories: () => Promise<void>;
   fetchLessons: () => Promise<void>;
+  fetchLessonById: (id: string) => Promise<Lesson | null>;
   setCurrentLesson: (lesson: Lesson | null) => void;
   completeLesson: (lessonId: string) => void;
   lessonsByCategory: Record<string, Lesson[]>;
 }
 
-// Données de démonstration
-const DEMO_LESSONS: Lesson[] = [
-  {
-    id: 'sleep-light',
-    category: {
-      id: 'sleep',
-      name: 'Sommeil',
-      color: '#AFCBFF',
-    },
-    title: 'Pourquoi la lumière influence votre énergie',
-    hook: 'Votre cerveau utilise la lumière pour réguler votre énergie.',
-    description: 'Découvrez comment la lumière naturelle affecte vos cycles de sommeil et votre énergie quotidienne.',
-    difficulty: 'beginner',
-    duration: 3,
-    xpReward: 20,
-    blocks: [
-      {
-        type: 'hook',
-        content: 'Votre cerveau utilise la lumière pour réguler votre énergie.',
-      },
-      {
-        type: 'text',
-        content: 'Chaque matin, la lumière du soleil envoie un signal à votre cerveau qui dit : "C\'est l\'heure de se réveiller !" Ce signal arrête la production de mélatonine, l\'hormone du sommeil.',
-      },
-      {
-        type: 'text',
-        content: 'À l\'inverse, la lumière bleue des écrans le soir peut tromper votre cerveau et le faire croire qu\'il fait encore jour.',
-      },
-      {
-        type: 'takeaway',
-        content: 'La lumière du matin aide aussi à préparer votre sommeil plus tard dans la journée.',
-      },
-    ],
-    quiz: [
-      {
-        id: 'q1',
-        question: 'Quel signal envoie la lumière du soleil le matin au cerveau ?',
-        options: [
-          'C\'est l\'heure de dormir',
-          'C\'est l\'heure de se réveiller',
-          'C\'est l\'heure de manger',
-          'C\'est l\'heure de faire du sport',
-        ],
-        correctAnswer: 1,
-      },
-      {
-        id: 'q2',
-        question: 'Quelle hormone est arrêtée par la lumière du matin ?',
-        options: [
-          'Dopamine',
-          'Sérotonine',
-          'Mélatonine',
-          'Cortisol',
-        ],
-        correctAnswer: 2,
-      },
-    ],
+const mapLessonFromSupabase = (row: any): Lesson => ({
+  id: row.id,
+  category: {
+    id: row.category_id,
+    name: row.categories?.name || 'Unknown',
+    color: row.categories?.color || '#6E6AE8',
   },
-  {
-    id: 'nutrition-protein',
-    category: {
-      id: 'nutrition',
-      name: 'Nutrition',
-      color: '#9DB8A1',
-    },
-    title: 'Pourquoi les protéines sont essentielles',
-    hook: 'Votre corps reconstruit constamment ses protéines.',
-    description: 'Comprendrez le rôle des protéines dans la satiété, l\'énergie et la construction musculaire.',
-    difficulty: 'beginner',
-    duration: 4,
-    xpReward: 20,
-    blocks: [
-      {
-        type: 'hook',
-        content: 'Votre corps reconstruit constamment ses protéines.',
-      },
-      {
-        type: 'text',
-        content: 'Les protéines sont les briques de construction de votre corps. Elles forment les muscles, les enzymes, les hormones et même votre système immunitaire.',
-      },
-      {
-        type: 'takeaway',
-        content: 'Une portion de protéines à chaque repas aide à maintenir votre énergie stable.',
-      },
-    ],
-    quiz: [
-      {
-        id: 'q1',
-        question: 'Que forment les protéines dans le corps ?',
-        options: [
-          'Les os uniquement',
-          'Les muscles, enzymes et hormones',
-          'La graisse corporelle',
-          'Le sang uniquement',
-        ],
-        correctAnswer: 1,
-      },
-    ],
-  },
-];
+  title: row.title,
+  hook: row.hook,
+  description: row.description || '',
+  difficulty: row.difficulty,  
+  duration: row.estimated_time,
+  xpReward: row.xp_reward,
+  blocks: row.blocks || [],
+  quiz: [], // Will be fetched separately
+});
 
-export const useLessonStore = create<LessonState>((set) => ({
+export const useLessonStore = create<LessonState>((set, get) => ({
   currentLesson: null,
-  lessons: DEMO_LESSONS,
+  lessons: [],
+  categories: [],
   isLoading: false,
-  lessonsByCategory: DEMO_LESSONS.reduce((acc, lesson) => {
-    if (!acc[lesson.category.id]) {
-      acc[lesson.category.id] = [];
+  error: null,
+  lessonsByCategory: {},
+
+  fetchCategories: async () => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+
+      const categories = data.map(cat => ({
+        id: cat.id,
+        name: cat.name,
+        color: cat.color,
+      }));
+
+      set({ categories });
+    } catch (error: any) {
+      console.error('Error fetching categories:', error);
+      set({ error: error.message });
     }
-    acc[lesson.category.id].push(lesson);
-    return acc;
-  }, {} as Record<string, Lesson[]>),
+  },
 
   fetchLessons: async () => {
-    set({ isLoading: true });
+    set({ isLoading: true, error: null });
     try {
-      // TODO: Fetch from Supabase
-      // const { data, error } = await supabase
-      //   .from('lessons')
-      //   .select('*, categories(*), quizzes(*)');
-      
-      // if (error) throw error;
-      // set({ lessons: data });
-      
-      // Simulation pour l'instant
-      console.log('Fetching lessons...');
-    } catch (error) {
+      // Fetch lessons with their categories
+      const { data: lessonsData, error: lessonsError } = await supabase
+        .from('lessons')
+        .select('*, categories(*)')
+        .eq('is_published', true)
+        .order('order_index', { ascending: true });
+
+      if (lessonsError) throw lessonsError;
+      if (!lessonsData) {
+        set({ lessons: [], isLoading: false });
+        return;
+      }
+
+      // Fetch quizzes for these lessons
+      const lessonIds = lessonsData.map(l => l.id);
+      const { data: quizzesData, error: quizzesError } = await supabase
+        .from('quizzes')
+        .select('*')
+        .in('lesson_id', lessonIds);
+
+      if (quizzesError) throw quizzesError;
+
+      // Map data to our Lesson type
+      const lessons = lessonsData.map(lesson => {
+        const mapped = mapLessonFromSupabase(lesson);
+        // Attach quizzes
+        const lessonQuizzes = (quizzesData || [])
+          .filter(q => q.lesson_id === lesson.id)
+          .sort((a, b) => a.order_index - b.order_index)
+          .map(q => ({
+            id: q.id,
+            question: q.question,
+            options: q.options,
+            correctAnswer: q.correct_answer,
+          }));
+        mapped.quiz = lessonQuizzes;
+        return mapped;
+      });
+
+      // Build lessonsByCategory
+      const lessonsByCategory = lessons.reduce((acc, lesson) => {
+        const catId = lesson.category.id;
+        if (!acc[catId]) {
+          acc[catId] = [];
+        }
+        acc[catId].push(lesson);
+        return acc;
+      }, {} as Record<string, Lesson[]>);
+
+      set({ lessons, lessonsByCategory, isLoading: false });
+    } catch (error: any) {
       console.error('Error fetching lessons:', error);
-    } finally {
-      set({ isLoading: false });
+      set({ error: error.message, isLoading: false });
+    }
+  },
+
+  fetchLessonById: async (id: string) => {
+    try {
+      const { data: lessonData, error } = await supabase
+        .from('lessons')
+        .select('*, categories(*)')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      if (!lessonData) return null;
+
+      const mapped = mapLessonFromSupabase(lessonData);
+
+      // Fetch quizzes
+      const { data: quizzesData } = await supabase
+        .from('quizzes')
+        .select('*')
+        .eq('lesson_id', id);
+
+      mapped.quiz = (quizzesData || [])
+        .sort((a, b) => a.order_index - b.order_index)
+        .map(q => ({
+          id: q.id,
+          question: q.question,
+          options: q.options,
+          correctAnswer: q.correct_answer,
+        }));
+
+      return mapped;
+    } catch (error) {
+      console.error('Error fetching lesson:', error);
+      return null;
     }
   },
 
   setCurrentLesson: (lesson) => set({ currentLesson: lesson }),
 
-  completeLesson: (lessonId: string) => {
+  completeLesson: async (lessonId: string) => {
     console.log(`Lesson ${lessonId} completed`);
+    // TODO: Save to user_progress table via progressionStore
   },
 }));
 
-export type { Lesson, LessonBlock, QuizQuestion };
+export type { Lesson, LessonBlock, QuizQuestion, Category };
