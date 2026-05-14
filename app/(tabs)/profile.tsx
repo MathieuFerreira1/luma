@@ -1,6 +1,7 @@
-import { Text, View, ScrollView } from 'react-native';
+import { Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenContainer } from '@/src/components/layout/ScreenContainer';
+import { useAuthStore } from '@/src/store/authStore';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const settingsSections = [
@@ -17,6 +18,12 @@ const settingsSections = [
 ];
 
 export default function ProfileScreen() {
+  const { user, logout } = useAuthStore();
+
+  const handleLogout = async () => {
+    await logout();
+  };
+
   return (
     <ScreenContainer>
       <SafeAreaView className="flex-1">
@@ -31,15 +38,19 @@ export default function ProfileScreen() {
               <View className="w-20 h-20 bg-brand/10 rounded-full items-center justify-center mb-3">
                 <FontAwesome name="user" size={36} color="#6E6AE8" />
               </View>
-              <Text className="text-primary-text text-xl font-bold">Émilie</Text>
-              <Text className="text-secondary-text text-sm">Niveau 2 — Explorateur</Text>
+              <Text className="text-primary-text text-xl font-bold">
+                {user?.email?.split('@')[0] || 'Explorateur'}
+              </Text>
+              <Text className="text-secondary-text text-sm">
+                {user?.email || ''}
+              </Text>
               
               <View className="flex-row gap-4 mt-4">
                 <View className="bg-background rounded-pill px-4 py-2">
-                  <Text className="text-primary-text text-sm font-medium">🔥 3 jours</Text>
+                  <Text className="text-primary-text text-sm font-medium">🔥 0 jours</Text>
                 </View>
                 <View className="bg-background rounded-pill px-4 py-2">
-                  <Text className="text-primary-text text-sm font-medium">⭐ 145 XP</Text>
+                  <Text className="text-primary-text text-sm font-medium">⭐ 0 XP</Text>
                 </View>
               </View>
             </View>
@@ -69,6 +80,17 @@ export default function ProfileScreen() {
               </View>
             </View>
           ))}
+
+          {/* Logout Button */}
+          <TouchableOpacity 
+            className="bg-red-50 rounded-card py-4 px-6 mb-8 items-center border border-red-100"
+            onPress={handleLogout}
+            activeOpacity={0.8}
+          >
+            <Text className="text-red-500 font-semibold text-base">
+              Se déconnecter
+            </Text>
+          </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
     </ScreenContainer>
