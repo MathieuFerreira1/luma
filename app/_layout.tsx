@@ -1,13 +1,8 @@
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Platform } from 'react-native';
 import { useEffect } from 'react';
 import { useAuthStore } from '@/src/store/authStore';
 import '@/global.css';
-
-if (Platform.OS === 'web') {
-  require('../assets/styles.css');
-}
 
 export default function RootLayout() {
   const initialize = useAuthStore((state) => state.initialize);
