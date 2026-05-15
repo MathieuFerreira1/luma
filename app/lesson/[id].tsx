@@ -1,10 +1,19 @@
-import { Text, View, ScrollView, TouchableOpacity, Animated } from 'react-native';
+import { Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useLocalSearchParams, Stack, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenContainer } from '@/src/components/layout/ScreenContainer';
 import { useLessonStore } from '@/src/store/lessonStore';
 import { useUserProfile, useUserProgress } from '@/src/hooks/useUserData';
+import { XPRewardAnimation } from '@/src/components/animations/XPRewardAnimation';
+import { QuizAnswerAnimation } from '@/src/components/animations/QuizAnswerAnimation';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  runOnJS,
+} from 'react-native-reanimated';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 function LessonBlockRenderer({ block }: { block: { type: string; content?: string } }) {
@@ -47,6 +56,7 @@ function QuizRenderer({ quiz, onComplete }: { quiz: any[]; onComplete: (correct:
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [correctCount, setCorrectCount] = useState(0);
   const [showResult, setShowResult] = useState(false);
+  const [quizAnimation, setQuizAnimation] = useState<'correct' | 'incorrect' | 'none'>('none');
 
   const question = quiz[currentQuestion];
 
@@ -55,19 +65,25 @@ function QuizRenderer({ quiz, onComplete }: { quiz: any[]; onComplete: (correct:
 
     setSelectedAnswer(index);
     const isCorrect = index === question.correctAnswer;
+    
     if (isCorrect) {
       setCorrectCount((prev) => prev + 1);
+      setQuizAnimation('correct');
+    } else {
+      setQuizAnimation('incorrect');
     }
+  };
 
-    setTimeout(() => {
-      if (currentQuestion < quiz.length - 1) {
-        setCurrentQuestion((prev) => prev + 1);
-        setSelectedAnswer(null);
-      } else {
-        setShowResult(true);
-        onComplete(correctCount + (isCorrect ? 1 : 0));
-      }
-    }, 800);
+  const handleAnimationComplete = () => {
+    setQuizAnimation('none');
+    
+    if (currentQuestion < quiz.length - 1) {
+      setCurrentQuestion((prev) => prev + 1);
+      setSelectedAnswer(null);
+    } else {
+      setShowResult(true);
+      onComplete(correctCount + (selectedAnswer !== null && selectedAnswer === question.correctAnswer ? 1 : 0));
+    }
   };
 
   if (showResult) {
@@ -95,45 +111,98 @@ function QuizRenderer({ quiz, onComplete }: { quiz: any[]; onComplete: (correct:
         {question.question}
       </Text>
 
-      <View className="gap-3">
+      <View className="gap-3 relative">
         {question.options.map((option: string, index: number) => {
           const isSelected = selectedAnswer === index;
           const isCorrect = index === question.correctAnswer;
           const showCorrectness = selectedAnswer !== null;
 
           return (
-            <TouchableOpacity
+            <AnimatedTouchableAnswer
               key={index}
-              className={`p-4 rounded-button border-2 ${
-                showCorrectness
-                  ? isCorrect
-                    ? 'bg-sage-green/20 border-sage-green'
-                    : isSelected
-                      ? 'bg-accent-yellow/20 border-accent-yellow'
-                      : 'bg-background border-background'
-                  : isSelected
-                    ? 'bg-brand/10 border-brand'
-                    : 'bg-white border-secondary-text/20'
-              }`}
+              index={index}
+              option={option}
+              isSelected={isSelected}
+              isCorrect={isCorrect}
+              showCorrectness={showCorrectness}
               onPress={() => handleAnswer(index)}
               disabled={selectedAnswer !== null}
-            >
-              <Text
-                className={`text-base font-medium ${
-                  showCorrectness && isCorrect
-                    ? 'text-sage-green'
-                    : showCorrectness && isSelected
-                      ? 'text-accent-yellow'
-                      : 'text-primary-text'
-                }`}
-              >
-                {option}
-              </Text>
-            </TouchableOpacity>
+            />
           );
         })}
       </View>
+
+      {quizAnimation !== 'none' && (
+        <QuizAnswerAnimation
+          type={quizAnimation}
+          onComplete={handleAnimationComplete}
+        />
+      )}
     </View>
+  );
+}
+
+function AnimatedTouchableAnswer({
+  index,
+  option,
+  isSelected,
+  isCorrect,
+  showCorrectness,
+  onPress,
+  disabled,
+}: {
+  index: number;
+  option: string;
+  isSelected: boolean;
+  isCorrect: boolean;
+  showCorrectness: boolean;
+  onPress: () => void;
+  disabled: boolean;
+}) {
+  const scale = useSharedValue(1);
+
+  const handlePress = () => {
+    scale.value = withSpring(0.98, { damping: 10 });
+    setTimeout(() => {
+      scale.value = withSpring(1, { damping: 10 });
+    }, 100);
+    onPress();
+  };
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  return (
+    <TouchableOpacity
+      className={`p-4 rounded-button border-2 ${
+        showCorrectness
+          ? isCorrect
+            ? 'bg-sage-green/20 border-sage-green'
+            : isSelected
+              ? 'bg-accent-yellow/20 border-accent-yellow'
+              : 'bg-background border-background'
+          : isSelected
+            ? 'bg-brand/10 border-brand'
+            : 'bg-white border-secondary-text/20'
+      }`}
+      onPress={handlePress}
+      disabled={disabled}
+    >
+      <Animated.View style={animatedStyle}>
+        <Text
+          className={`text-base font-medium ${
+            showCorrectness && isCorrect
+              ? 'text-sage-green'
+              : showCorrectness && isSelected
+                ? 'text-accent-yellow'
+                : 'text-primary-text'
+          }`}
+        >
+          {option}
+        </Text>
+      </Animated.View>
+    </TouchableOpacity>
   );
 }
 
@@ -225,23 +294,26 @@ export default function LessonScreen() {
               </Text>
             </View>
           ) : showReward ? (
-            <View className="bg-white rounded-card p-8 shadow-card items-center">
-              <View className="w-20 h-20 bg-brand/10 rounded-full items-center justify-center mb-4">
-                <Text className="text-4xl">⭐</Text>
+            <>
+              <View className="bg-white rounded-card p-8 shadow-card items-center">
+                <View className="w-20 h-20 bg-brand/10 rounded-full items-center justify-center mb-4">
+                  <Text className="text-4xl">⭐</Text>
+                </View>
+
+                <Text className="text-primary-text text-2xl font-bold mb-2">
+                  +{earnedXP} XP
+                </Text>
+
+                <Text className="text-primary-text text-base text-center mb-6">
+                  {currentLesson.blocks.find((b: any) => b.type === 'takeaway')?.content}
+                </Text>
+
+                <TouchableOpacity className="bg-brand rounded-button py-3 px-8" onPress={() => router.replace('/(tabs)/home')}>
+                  <Text className="text-white font-semibold text-base">Continuer</Text>
+                </TouchableOpacity>
               </View>
-
-              <Text className="text-primary-text text-2xl font-bold mb-2">
-                +{earnedXP} XP
-              </Text>
-
-              <Text className="text-primary-text text-base text-center mb-6">
-                {currentLesson.blocks.find((b: any) => b.type === 'takeaway')?.content}
-              </Text>
-
-              <TouchableOpacity className="bg-brand rounded-button py-3 px-8" onPress={() => router.replace('/(tabs)/home')}>
-                <Text className="text-white font-semibold text-base">Continuer</Text>
-              </TouchableOpacity>
-            </View>
+              <XPRewardAnimation amount={earnedXP} visible={showReward} />
+            </>
           ) : showQuiz ? (
             <View className="py-4">
               <Text className="text-primary-text text-xl font-bold mb-6">
