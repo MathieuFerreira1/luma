@@ -37,7 +37,7 @@ function LessonBlockRenderer({ block }: { block: { type: string; content?: strin
       );
     case 'takeaway':
       return (
-        <View className="bg-sage-green/10 rounded-card p-5 mb-6 border-l-4 border-sage-green">
+        <View className="bg-success/10 rounded-card p-5 mb-6 border-l-4 border-success">
           <Text className="text-primary-text text-base font-semibold leading-relaxed">
             💡 {block.content}
           </Text>
@@ -179,7 +179,7 @@ function AnimatedTouchableAnswer({
       className={`p-4 rounded-button border-2 ${
         showCorrectness
           ? isCorrect
-            ? 'bg-sage-green/20 border-sage-green'
+            ? 'bg-success/20 border-success'
             : isSelected
               ? 'bg-accent-yellow/20 border-accent-yellow'
               : 'bg-background border-background'
@@ -194,7 +194,7 @@ function AnimatedTouchableAnswer({
         <Text
           className={`text-base font-medium ${
             showCorrectness && isCorrect
-              ? 'text-sage-green'
+              ? 'text-success'
               : showCorrectness && isSelected
                 ? 'text-accent-yellow'
                 : 'text-primary-text'
@@ -292,8 +292,8 @@ export default function LessonScreen() {
       case 'takeaway':
         return (
           <View className="flex-1 items-center justify-center px-4">
-            <View className="bg-sage-green/10 rounded-card p-6 border-l-4 border-sage-green">
-              <Text className="text-sage-green text-4xl text-center mb-4">💡</Text>
+            <View className="bg-success/10 rounded-card p-6 border-l-4 border-success">
+              <Text className="text-success text-4xl text-center mb-4">💡</Text>
               <Text className="text-primary-text text-xl font-semibold leading-relaxed text-center">
                 {currentBlock.content}
               </Text>
@@ -337,9 +337,9 @@ export default function LessonScreen() {
         <View className="flex-1 px-6">
           {isCompleted ? (
             <View className="flex-1 items-center justify-center">
-              <View className="bg-sage-green/10 rounded-card p-6">
-                <Text className="text-sage-green text-4xl text-center mb-4">✓</Text>
-                <Text className="text-sage-green text-xl font-semibold text-center">
+              <View className="bg-success/10 rounded-card p-6">
+                <Text className="text-success text-4xl text-center mb-4">✓</Text>
+                <Text className="text-success text-xl font-semibold text-center">
                   Leçon déjà complétée
                 </Text>
               </View>

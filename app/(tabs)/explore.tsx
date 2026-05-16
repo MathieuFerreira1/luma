@@ -293,7 +293,7 @@ export default function ExploreScreen() {
                       <View
                         className={`rounded-pill px-3 py-1 ${
                           selectedLesson.status === 'completed'
-                            ? 'bg-sage-green/20'
+                            ? 'bg-success/20'
                             : selectedLesson.status === 'available'
                             ? 'bg-brand/20'
                             : 'bg-secondary-text/10'
@@ -302,7 +302,7 @@ export default function ExploreScreen() {
                         <Text
                           className={`text-xs font-semibold ${
                             selectedLesson.status === 'completed'
-                              ? 'text-sage-green'
+                              ? 'text-success'
                               : selectedLesson.status === 'available'
                               ? 'text-brand'
                               : 'text-secondary-text'
@@ -359,7 +359,7 @@ export default function ExploreScreen() {
                         selectedLesson.status === 'locked'
                           ? 'bg-secondary-text/20'
                           : selectedLesson.status === 'completed'
-                          ? 'bg-sage-green'
+                          ? 'bg-success'
                           : 'bg-brand'
                       }`}
                     >
