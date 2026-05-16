@@ -188,19 +188,17 @@ export default function ExploreScreen() {
                   const statusColor = getStatusColor(item.status);
 
                   return (
-                    <View key={item.id} className="flex-row items-center" style={{ height: 80 }}>
+                    <View key={item.id} className="flex-row items-center" style={{ height: 100 }}>
                       {/* Left side: line and dot */}
                       <View className="items-center mr-4 h-full" style={{ width: 32 }}>
                         {/* Top line */}
-                        {index > 0 && (
-                          <View
-                            className="w-1 flex-1"
-                            style={{
-                              backgroundColor: item.status === 'locked' ? COLORS.border : statusColor,
-                              opacity: item.status === 'locked' ? 0.3 : 1,
-                            }}
-                          />
-                        )}
+                        <View
+                          className="w-1 flex-1"
+                          style={{
+                            backgroundColor: index > 0 ? (item.status === 'locked' ? COLORS.border : statusColor) : 'transparent',
+                            opacity: index > 0 ? (item.status === 'locked' ? 0.3 : 1) : 0,
+                          }}
+                        />
 
                         {/* Dot */}
                         <TouchableOpacity
@@ -233,15 +231,13 @@ export default function ExploreScreen() {
                         </TouchableOpacity>
 
                         {/* Bottom line */}
-                        {!isLast && (
-                          <View
-                            className="w-1 flex-1"
-                            style={{
-                              backgroundColor: item.status === 'completed' ? COLORS.status.success : COLORS.border,
-                              opacity: item.status === 'completed' ? 1 : 0.3,
-                            }}
-                          />
-                        )}
+                        <View
+                          className="w-1 flex-1"
+                          style={{
+                            backgroundColor: !isLast ? (item.status === 'completed' ? COLORS.status.success : COLORS.border) : 'transparent',
+                            opacity: !isLast ? (item.status === 'completed' ? 1 : 0.3) : 0,
+                          }}
+                        />
                       </View>
 
                       {/* Right side: lesson title */}
