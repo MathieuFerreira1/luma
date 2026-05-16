@@ -2,7 +2,7 @@ import { View } from 'react-native';
 
 export function ScreenContainer({ children }: { children: React.ReactNode }) {
   return (
-    <View className="flex-1 bg-background" style={{ paddingBottom: 85 }}>
+    <View className="flex-1 bg-background">
       {children}
     </View>
   );

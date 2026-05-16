@@ -47,7 +47,7 @@ export default function HomeScreen() {
   return (
     <ScreenContainer>
       <SafeAreaView className="flex-1">
-        <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
+        <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
           {/* Top Bar */}
           <View className="flex-row justify-between items-center mt-2 mb-6">
             <View>

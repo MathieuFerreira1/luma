@@ -166,7 +166,7 @@ export default function ExploreScreen() {
         </View>
 
         {/* Path Content */}
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
           <View className="px-6 py-4">
             {pathItems.length === 0 ? (
               <View className="items-center justify-center py-20">

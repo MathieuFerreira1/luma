@@ -31,7 +31,7 @@ export default function ProgressScreen() {
   return (
     <ScreenContainer>
       <SafeAreaView className="flex-1">
-        <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
+        <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
           <Text className="text-primary-text text-2xl font-bold mt-2 mb-6">
             Progression
           </Text>
