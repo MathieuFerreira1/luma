@@ -9,6 +9,7 @@ import Animated, {
   interpolateColor,
   runOnJS,
 } from 'react-native-reanimated';
+import { COLORS } from '@/src/constants/theme';
 
 type QuizAnimationType = 'correct' | 'incorrect' | 'none';
 
@@ -59,7 +60,7 @@ export function QuizAnswerAnimation({ type, onComplete }: QuizAnswerAnimationPro
     borderColor: interpolateColor(
       borderColor.value,
       [0, 1, 2],
-      ['rgb(229, 231, 235)', 'rgb(157, 184, 161)', 'rgb(244, 201, 93)']
+      [COLORS.border, COLORS.status.success, COLORS.category.brain]
     ),
   }));
 
@@ -71,11 +72,11 @@ export function QuizAnswerAnimation({ type, onComplete }: QuizAnswerAnimationPro
       className="absolute inset-0 items-center justify-center z-40"
       pointerEvents="none"
     >
-      <View className="bg-white rounded-card p-6 shadow-card items-center">
+      <View className="bg-card rounded-card p-6 shadow-card items-center">
         <Text className="text-5xl mb-2">
           {type === 'correct' ? '✅' : '❌'}
         </Text>
-        <Text className="text-lg font-semibold" style={{ color: type === 'correct' ? '#9DB8A1' : '#F4C95D' }}>
+        <Text className="text-lg font-semibold" style={{ color: type === 'correct' ? COLORS.status.success : COLORS.category.brain }}>
           {type === 'correct' ? 'Bonne réponse !' : 'Pas tout à fait...'}
         </Text>
       </View>

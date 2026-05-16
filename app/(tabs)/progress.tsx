@@ -5,6 +5,7 @@ import { useUserProfile, useUserProgress } from '@/src/hooks/useUserData';
 import { useLessonStore } from '@/src/store/lessonStore';
 import { ScreenContainer } from '@/src/components/layout/ScreenContainer';
 import { SectionTitle } from '@/src/components/text/SectionTitle';
+import { COLORS } from '@/src/constants/theme';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 export default function ProgressScreen() {
@@ -36,7 +37,7 @@ export default function ProgressScreen() {
           </Text>
 
           {/* Hero Stats */}
-          <View className="bg-white rounded-card p-6 shadow-card mb-8 items-center">
+          <View className="bg-card rounded-card p-6 shadow-card mb-8 items-center">
             <Text className="text-brand text-4xl font-bold mb-1">Niveau {level}</Text>
             <Text className="text-secondary-text text-base mb-4">{levelTitle}</Text>
 
@@ -52,15 +53,15 @@ export default function ProgressScreen() {
           <SectionTitle>Statistiques</SectionTitle>
 
           <View className="flex-row gap-3 mb-8">
-            <View className="bg-white rounded-card p-4 shadow-card flex-1 items-center">
+            <View className="bg-card rounded-card p-4 shadow-card flex-1 items-center">
               <Text className="text-primary-text text-2xl font-bold">{progress.totalLessons}</Text>
               <Text className="text-secondary-text text-xs mt-1">Leçons</Text>
             </View>
-            <View className="bg-white rounded-card p-4 shadow-card flex-1 items-center">
+            <View className="bg-card rounded-card p-4 shadow-card flex-1 items-center">
               <Text className="text-primary-text text-2xl font-bold">{progress.totalLearningTime}m</Text>
               <Text className="text-secondary-text text-xs mt-1">Apprentissage</Text>
             </View>
-            <View className="bg-white rounded-card p-4 shadow-card flex-1 items-center">
+            <View className="bg-card rounded-card p-4 shadow-card flex-1 items-center">
               <Text className="text-primary-text text-2xl font-bold">{streak}j</Text>
               <Text className="text-secondary-text text-xs mt-1">Série</Text>
             </View>
@@ -77,9 +78,9 @@ export default function ProgressScreen() {
                 progress.achievements.map((slug) => (
                   <View
                     key={slug}
-                    className="bg-white rounded-card p-4 shadow-card items-center flex-1 min-w-[100px]"
+                    className="bg-card rounded-card p-4 shadow-card items-center flex-1 min-w-[100px]"
                   >
-                    <FontAwesome name="star" size={28} color="#6E6AE8" />
+                    <FontAwesome name="star" size={28} color={COLORS.brand} />
                     <Text className="text-primary-text text-xs font-medium mt-2 text-center capitalize">
                       {slug.replace(/-/g, ' ')}
                     </Text>

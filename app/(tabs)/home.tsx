@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link } from 'expo-router';
 import { useEffect } from 'react';
 import { ScreenContainer } from '@/src/components/layout/ScreenContainer';
+import { COLORS } from '@/src/constants/theme';
 import { SectionTitle } from '@/src/components/text/SectionTitle';
 import { useAuthStore } from '@/src/store/authStore';
 import { useLessonStore } from '@/src/store/lessonStore';
@@ -54,10 +55,10 @@ export default function HomeScreen() {
               <Text className="text-primary-text text-xl font-semibold">{displayName}</Text>
             </View>
             <View className="flex-row items-center gap-3">
-              <View className="bg-white rounded-full px-3 py-1.5 shadow-card">
+              <View className="bg-card rounded-full px-3 py-1.5 shadow-card">
                 <Text className="text-brand text-sm font-semibold">🔥 {streak}</Text>
               </View>
-              <View className="bg-white rounded-full px-3 py-1.5 shadow-card">
+              <View className="bg-card rounded-full px-3 py-1.5 shadow-card">
                 <Text className="text-brand text-sm font-semibold">⭐ Niv. {level}</Text>
               </View>
             </View>
@@ -66,10 +67,10 @@ export default function HomeScreen() {
           <SectionTitle>Votre découverte du jour</SectionTitle>
 
           {isLoading ? (
-            <ActivityIndicator size="large" color="#6E6AE8" className="py-8" />
+            <ActivityIndicator size="large" color={COLORS.brand} className="py-8" />
           ) : todayLesson ? (
             <Link href={`/lesson/${todayLesson.id}`} asChild>
-              <View className="bg-white rounded-card p-6 shadow-card mb-8 active:opacity-90">
+              <View className="bg-card rounded-card p-6 shadow-card mb-8 active:opacity-90">
                 <View className="flex-row items-center gap-2 mb-3">
                   <View
                     className="rounded-pill px-3 py-1"
@@ -97,7 +98,7 @@ export default function HomeScreen() {
               </View>
             </Link>
           ) : (
-            <View className="bg-white rounded-card p-6 shadow-card mb-8 items-center">
+            <View className="bg-card rounded-card p-6 shadow-card mb-8 items-center">
               <Text className="text-4xl mb-2">🎉</Text>
               <Text className="text-primary-text text-lg font-bold text-center mb-2">
                 Félicitations !
@@ -111,13 +112,13 @@ export default function HomeScreen() {
           <SectionTitle>Vos progrès</SectionTitle>
 
           {isLoading ? (
-            <ActivityIndicator size="small" color="#6E6AE8" className="py-4" />
+            <ActivityIndicator size="small" color={COLORS.brand} className="py-4" />
           ) : (
             <View className="gap-3">
               {Object.values(categoryProgress).map((cat: any) => {
                 const percent = cat.total > 0 ? Math.round((cat.completed / cat.total) * 100) : 0;
                 return (
-                  <View key={cat.id} className="bg-white rounded-card p-4 shadow-card">
+                  <View key={cat.id} className="bg-card rounded-card p-4 shadow-card">
                     <View className="flex-row justify-between items-center mb-2">
                       <Text className="text-primary-text font-medium">{cat.name}</Text>
                       <Text className="text-brand font-semibold">

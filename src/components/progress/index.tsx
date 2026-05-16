@@ -1,4 +1,5 @@
 import { View, Text } from 'react-native';
+import { COLORS } from '@/src/constants/theme';
 
 interface XPBarProps {
   current: number;
@@ -57,7 +58,7 @@ export function CircularProgress({
           height: size,
           borderRadius: size / 2,
           borderWidth: strokeWidth,
-          borderColor: '#E8E6E1',
+          borderColor: COLORS.border,
           position: 'absolute',
         }}
       />
@@ -67,7 +68,7 @@ export function CircularProgress({
           height: size,
           borderRadius: size / 2,
           borderWidth: strokeWidth,
-          borderColor: '#6E6AE8',
+          borderColor: COLORS.brand,
           borderTopColor: 'transparent',
           borderLeftColor: 'transparent',
           borderBottomColor: 'transparent',

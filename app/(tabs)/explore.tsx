@@ -6,6 +6,7 @@ import { ScreenContainer } from '@/src/components/layout/ScreenContainer';
 import { useLessonStore } from '@/src/store/lessonStore';
 import { useUserProgress } from '@/src/hooks/useUserData';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { COLORS } from '@/src/constants/theme';
 
 interface CategoryTab {
   id: string;
@@ -36,11 +37,11 @@ export default function ExploreScreen() {
   }, [fetchCategories, fetchLessons]);
 
   const tabs: CategoryTab[] = [
-    { id: 'sleep', name: 'Sommeil', icon: 'moon-o', color: '#AFCBFF' },
-    { id: 'nutrition', name: 'Nutrition', icon: 'apple', color: '#9DB8A1' },
-    { id: 'brain', name: 'Cerveau', icon: 'bolt', color: '#F4C95D' },
-    { id: 'movement', name: 'Mouvement', icon: 'heartbeat', color: '#E8A87C' },
-    { id: 'longevity', name: 'Longévité', icon: 'leaf', color: '#B8A9C9' },
+    { id: 'sleep', name: 'Sommeil', icon: 'moon-o', color: COLORS.category.sleep },
+    { id: 'nutrition', name: 'Nutrition', icon: 'apple', color: COLORS.category.nutrition },
+    { id: 'brain', name: 'Cerveau', icon: 'bolt', color: COLORS.category.brain },
+    { id: 'movement', name: 'Mouvement', icon: 'heartbeat', color: COLORS.category.movement },
+    { id: 'longevity', name: 'Longévité', icon: 'leaf', color: COLORS.category.longevity },
   ];
 
   const TAB_WIDTH = Dimensions.get('window').width / tabs.length;
@@ -100,24 +101,24 @@ export default function ExploreScreen() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return '#9DB8A1';
+        return COLORS.status.success;
       case 'available':
-        return '#6E6AE8';
+        return COLORS.brand;
       case 'locked':
-        return '#D0D5DD';
+        return COLORS.status.locked;
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
-        return { name: 'check' as const, color: '#FFFFFF' };
+        return { name: 'check' as const, color: COLORS.background };
       case 'available':
-        return { name: 'play' as const, color: '#FFFFFF' };
+        return { name: 'play' as const, color: COLORS.background };
       case 'locked':
-        return { name: 'lock' as const, color: '#D0D5DD' };
+        return { name: 'lock' as const, color: COLORS.status.locked };
       default:
-        return { name: 'circle' as const, color: '#D0D5DD' };
+        return { name: 'circle' as const, color: COLORS.status.locked };
     }
   };
 
@@ -150,7 +151,7 @@ export default function ExploreScreen() {
                 <FontAwesome
                   name={tab.icon as any}
                   size={20}
-                  color={isSelected ? '#6E6AE8' : tab.color}
+                  color={isSelected ? COLORS.brand : tab.color}
                 />
                 <Text
                   className={`text-xs font-medium mt-1 ${
@@ -195,7 +196,7 @@ export default function ExploreScreen() {
                           <View
                             className="w-1 flex-1"
                             style={{
-                              backgroundColor: item.status === 'locked' ? '#E5E7EB' : statusColor,
+                              backgroundColor: item.status === 'locked' ? COLORS.border : statusColor,
                               opacity: item.status === 'locked' ? 0.3 : 1,
                             }}
                           />
@@ -211,10 +212,10 @@ export default function ExploreScreen() {
                             style={{
                               backgroundColor:
                                 item.status === 'completed'
-                                  ? '#9DB8A1'
+                                  ? COLORS.status.success
                                   : item.status === 'available'
-                                  ? '#6E6AE8'
-                                  : '#F3F4F6',
+                                  ? COLORS.brand
+                                  : COLORS.muted,
                               borderWidth: 3,
                               borderColor: statusColor,
                               shadowColor: statusColor,
@@ -236,7 +237,7 @@ export default function ExploreScreen() {
                           <View
                             className="w-1 flex-1"
                             style={{
-                              backgroundColor: item.status === 'completed' ? '#9DB8A1' : '#E5E7EB',
+                              backgroundColor: item.status === 'completed' ? COLORS.status.success : COLORS.border,
                               opacity: item.status === 'completed' ? 1 : 0.3,
                             }}
                           />
@@ -248,7 +249,7 @@ export default function ExploreScreen() {
                         onPress={() => handleLessonPress(item)}
                         className="flex-1 justify-center"
                       >
-                        <View className="bg-white rounded-card p-4 shadow-card">
+                        <View className="bg-card rounded-card p-4 shadow-card">
                           <Text
                             className={`text-base font-semibold ${
                               item.status === 'locked'
@@ -286,7 +287,7 @@ export default function ExploreScreen() {
             {/* Modal content */}
             <View className="flex-1 items-center justify-center px-6" pointerEvents="box-none">
               <View
-                className="bg-white w-full rounded-card p-6 shadow-2xl"
+                className="bg-card w-full rounded-card p-6 shadow-2xl"
                 pointerEvents="auto"
               >
                 {selectedLesson && (
@@ -319,7 +320,7 @@ export default function ExploreScreen() {
                         </Text>
                       </View>
                       <TouchableOpacity onPress={() => setSelectedLesson(null)}>
-                        <FontAwesome name="times" size={20} color="#667085" />
+                        <FontAwesome name="times" size={20} color={COLORS.text.secondary} />
                       </TouchableOpacity>
                     </View>
 

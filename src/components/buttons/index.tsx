@@ -23,7 +23,7 @@ export function PrimaryButton({ children, disabled, ...props }: ButtonProps) {
 export function SecondaryButton({ children, disabled, ...props }: ButtonProps) {
   return (
     <TouchableOpacity
-      className={`bg-white rounded-button py-3.5 px-6 items-center shadow-card border border-secondary-text/20 ${
+      className={`bg-card rounded-button py-3.5 px-6 items-center shadow-card border border-secondary-text/20 ${
         disabled ? 'opacity-50' : ''
       }`}
       activeOpacity={0.8}

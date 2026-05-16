@@ -2,6 +2,7 @@ import { Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '@/src/store/authStore';
 import { useUserProfile } from '@/src/hooks/useUserData';
+import { COLORS } from '@/src/constants/theme';
 import { ScreenContainer } from '@/src/components/layout/ScreenContainer';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
@@ -30,10 +31,10 @@ export default function ProfileScreen() {
           </Text>
 
           {/* Profile Header */}
-          <View className="bg-white rounded-card p-6 shadow-card mb-8">
+          <View className="bg-card rounded-card p-6 shadow-card mb-8">
             <View className="items-center">
               <View className="w-20 h-20 bg-brand/10 rounded-full items-center justify-center mb-3">
-                <FontAwesome name="user" size={36} color="#6E6AE8" />
+                <FontAwesome name="user" size={36} color={COLORS.brand} />
               </View>
               <Text className="text-primary-text text-xl font-bold">{displayName}</Text>
               <Text className="text-secondary-text text-sm">{email}</Text>
@@ -61,21 +62,21 @@ export default function ProfileScreen() {
             <Text className="text-primary-text text-lg font-semibold mb-3">
               Compte
             </Text>
-            <View className="bg-white rounded-card shadow-card overflow-hidden">
+            <View className="bg-card rounded-card shadow-card overflow-hidden">
               <View className="flex-row items-center px-4 py-3.5 border-b border-background">
-                <FontAwesome name="user" size={18} color="#667085" />
+                <FontAwesome name="user" size={18} color={COLORS.text.secondary} />
                 <Text className="text-primary-text text-base ml-3 flex-1">Modifier le profil</Text>
-                <FontAwesome name="chevron-right" size={14} color="#667085" />
+                <FontAwesome name="chevron-right" size={14} color={COLORS.text.secondary} />
               </View>
               <View className="flex-row items-center px-4 py-3.5 border-b border-background">
-                <FontAwesome name="bell" size={18} color="#667085" />
+                <FontAwesome name="bell" size={18} color={COLORS.text.secondary} />
                 <Text className="text-primary-text text-base ml-3 flex-1">Notifications</Text>
-                <FontAwesome name="chevron-right" size={14} color="#667085" />
+                <FontAwesome name="chevron-right" size={14} color={COLORS.text.secondary} />
               </View>
               <View className="flex-row items-center px-4 py-3.5">
-                <FontAwesome name="lock" size={18} color="#667085" />
+                <FontAwesome name="lock" size={18} color={COLORS.text.secondary} />
                 <Text className="text-primary-text text-base ml-3 flex-1">Confidentialité</Text>
-                <FontAwesome name="chevron-right" size={14} color="#667085" />
+                <FontAwesome name="chevron-right" size={14} color={COLORS.text.secondary} />
               </View>
             </View>
           </View>
@@ -84,21 +85,21 @@ export default function ProfileScreen() {
             <Text className="text-primary-text text-lg font-semibold mb-3">
               Application
             </Text>
-            <View className="bg-white rounded-card shadow-card overflow-hidden">
+            <View className="bg-card rounded-card shadow-card overflow-hidden">
               <View className="flex-row items-center px-4 py-3.5 border-b border-background">
-                <FontAwesome name="moon-o" size={18} color="#667085" />
+                <FontAwesome name="moon-o" size={18} color={COLORS.text.secondary} />
                 <Text className="text-primary-text text-base ml-3 flex-1">Mode sombre</Text>
-                <FontAwesome name="chevron-right" size={14} color="#667085" />
+                <FontAwesome name="chevron-right" size={14} color={COLORS.text.secondary} />
               </View>
               <View className="flex-row items-center px-4 py-3.5 border-b border-background">
-                <FontAwesome name="globe" size={18} color="#667085" />
+                <FontAwesome name="globe" size={18} color={COLORS.text.secondary} />
                 <Text className="text-primary-text text-base ml-3 flex-1">Langue</Text>
-                <FontAwesome name="chevron-right" size={14} color="#667085" />
+                <FontAwesome name="chevron-right" size={14} color={COLORS.text.secondary} />
               </View>
               <View className="flex-row items-center px-4 py-3.5">
-                <FontAwesome name="info-circle" size={18} color="#667085" />
+                <FontAwesome name="info-circle" size={18} color={COLORS.text.secondary} />
                 <Text className="text-primary-text text-base ml-3 flex-1">À propos</Text>
-                <FontAwesome name="chevron-right" size={14} color="#667085" />
+                <FontAwesome name="chevron-right" size={14} color={COLORS.text.secondary} />
               </View>
             </View>
           </View>

@@ -15,6 +15,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { COLORS } from '@/src/constants/theme';
 
 function LessonBlockRenderer({ block }: { block: { type: string; content?: string } }) {
   switch (block.type) {
@@ -88,7 +89,7 @@ function QuizRenderer({ quiz, onComplete }: { quiz: any[]; onComplete: (correct:
 
   if (showResult) {
     return (
-      <View className="bg-white rounded-card p-6 shadow-card items-center">
+      <View className="bg-card rounded-card p-6 shadow-card items-center">
         <Text className="text-4xl mb-2">{correctCount === quiz.length ? '🎉' : '✨'}</Text>
         <Text className="text-primary-text text-2xl font-bold mb-2">
           {correctCount}/{quiz.length} bonnes réponses
@@ -184,7 +185,7 @@ function AnimatedTouchableAnswer({
               : 'bg-background border-background'
           : isSelected
             ? 'bg-brand/10 border-brand'
-            : 'bg-white border-secondary-text/20'
+            : 'bg-card border-secondary-text/20'
       }`}
       onPress={handlePress}
       disabled={disabled}
@@ -318,7 +319,7 @@ export default function LessonScreen() {
         <View className="px-6 pt-4">
           <View className="flex-row items-center justify-between mb-4">
             <TouchableOpacity onPress={() => router.back()}>
-              <FontAwesome name="arrow-left" size={22} color="#1D2235" />
+              <FontAwesome name="arrow-left" size={22} color={COLORS.text.secondary} />
             </TouchableOpacity>
             <Text className="text-secondary-text text-sm">
               {currentStep}/{totalSteps}
@@ -345,7 +346,7 @@ export default function LessonScreen() {
             </View>
           ) : showReward ? (
             <View className="flex-1 items-center justify-center">
-              <View className="bg-white rounded-card p-8 shadow-card items-center">
+              <View className="bg-card rounded-card p-8 shadow-card items-center">
                 <View className="w-20 h-20 bg-brand/10 rounded-full items-center justify-center mb-4">
                   <Text className="text-4xl">⭐</Text>
                 </View>

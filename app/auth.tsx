@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '@/src/store/authStore';
+import { COLORS } from '@/src/constants/theme';
 
 export default function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true);
@@ -77,11 +78,11 @@ export default function AuthScreen() {
           {/* Form Card */}
           <View className="bg-card rounded-card p-6 shadow-card">
             {/* Toggle */}
-            <View className="flex-row bg-background rounded-pill p-1 mb-6">
+            <View className="flex-row bg-card rounded-pill p-1 mb-6">
               <TouchableOpacity
                 onPress={() => setIsLogin(true)}
                 className={`flex-1 py-2.5 rounded-pill items-center ${
-                  isLogin ? 'bg-card shadow-sm' : ''
+                  isLogin ? 'bg-background shadow-sm' : ''
                 }`}
               >
                 <Text
@@ -95,7 +96,7 @@ export default function AuthScreen() {
               <TouchableOpacity
                 onPress={() => setIsLogin(false)}
                 className={`flex-1 py-2.5 rounded-pill items-center ${
-                  !isLogin ? 'bg-card shadow-sm' : ''
+                  !isLogin ? 'bg-background shadow-sm' : ''
                 }`}
               >
                 <Text
@@ -115,11 +116,11 @@ export default function AuthScreen() {
                 value={email}
                 onChangeText={setEmail}
                 placeholder="vous@exemple.com"
-                placeholderTextColor="#667085"
+                placeholderTextColor={COLORS.text.secondary}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
-                className="bg-background rounded-button px-4 py-3.5 text-primary-text text-base border border-transparent focus:border-brand"
+                className="bg-card rounded-button px-4 py-3.5 text-primary-text text-base border border-transparent focus:border-brand"
               />
             </View>
 
@@ -130,10 +131,10 @@ export default function AuthScreen() {
                 value={password}
                 onChangeText={setPassword}
                 placeholder="••••••••"
-                placeholderTextColor="#667085"
+                placeholderTextColor={COLORS.text.secondary}
                 secureTextEntry
                 autoCapitalize="none"
-                className="bg-background rounded-button px-4 py-3.5 text-primary-text text-base border border-transparent focus:border-brand"
+                className="bg-card rounded-button px-4 py-3.5 text-primary-text text-base border border-transparent focus:border-brand"
               />
             </View>
 
@@ -160,7 +161,7 @@ export default function AuthScreen() {
               className="bg-brand rounded-button py-4 items-center mt-6 shadow-button"
             >
               {isLoading ? (
-                <ActivityIndicator color="#FFFFFF" />
+                <ActivityIndicator color={COLORS.text.inverse} />
               ) : (
                 <Text className="text-white text-base font-semibold">
                   {isLogin ? 'Se connecter' : "S'inscrire"}

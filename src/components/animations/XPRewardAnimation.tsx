@@ -105,7 +105,7 @@ export function XPRewardAnimation({ amount, onComplete, visible }: XPRewardAnima
   return (
     <View className="absolute inset-0 items-center justify-center pointer-events-none z-50">
       <Animated.View style={mainStyle} className="items-center">
-        <View className="bg-white rounded-card p-8 shadow-card items-center">
+        <View className="bg-card rounded-card p-8 shadow-card items-center">
           <Text className="text-5xl mb-2">⭐</Text>
           <Text className="text-brand text-4xl font-bold">+{amount} XP</Text>
         </View>

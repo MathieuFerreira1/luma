@@ -1,6 +1,6 @@
-import { View, Text } from 'react-native';
-import { TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Link } from 'expo-router';
+import { COLORS } from '@/src/constants/theme';
 
 interface LessonCardProps {
   id: string;
@@ -17,13 +17,13 @@ export function LessonCard({
   title,
   category,
   duration,
-  categoryColor = '#6E6AE8',
+  categoryColor = COLORS.brand,
   difficulty = 'Débutant',
   description,
 }: LessonCardProps) {
   return (
     <Link href={`/lesson/${id}`} asChild>
-      <TouchableOpacity className="bg-white rounded-card p-5 shadow-card active:opacity-90">
+      <TouchableOpacity className="bg-card rounded-card p-5 shadow-card active:opacity-90">
         <View className="flex-row items-center gap-2 mb-3">
           <View
             className="rounded-pill px-3 py-1"
@@ -62,7 +62,7 @@ export function CategoryCard({
   progress: number;
 }) {
   return (
-    <TouchableOpacity className="bg-white rounded-card p-5 shadow-card active:opacity-90">
+    <TouchableOpacity className="bg-card rounded-card p-5 shadow-card active:opacity-90">
       <View className="flex-row items-center gap-4">
         <View
           className="w-12 h-12 rounded-button items-center justify-center"
