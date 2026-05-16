@@ -105,7 +105,7 @@ export function useUserProgress() {
 
       setProgress({
         completedLessons: progressData?.map((p) => p.lesson_id) || [],
-        achievements: achievementData?.map((a) => a.achievements?.slug).filter(Boolean) || [],
+        achievements: achievementData?.map((a: any) => a.achievements?.slug).filter(Boolean) || [],
         totalLessons: progressData?.length || 0,
         totalLearningTime: totalTime,
       });

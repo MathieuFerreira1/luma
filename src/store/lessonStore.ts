@@ -4,6 +4,7 @@ import { supabase } from '@/src/services/supabase';
 interface Category {
   id: string;
   name: string;
+  slug: string;
   color: string;
 }
 
@@ -18,6 +19,7 @@ interface Lesson {
   xpReward: number;
   blocks: LessonBlock[];
   quiz: QuizQuestion[];
+  orderIndex?: number;
 }
 
 interface LessonBlock {
@@ -67,6 +69,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
       const categories = data.map((cat) => ({
         id: cat.id,
         name: cat.name,
+        slug: cat.slug,
         color: cat.color,
       }));
       set({ categories });
@@ -107,6 +110,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
         category: {
           id: lesson.category_id,
           name: lesson.categories?.name || 'Unknown',
+          slug: lesson.categories?.slug || '',
           color: lesson.categories?.color || '#6E6AE8',
         },
         title: lesson.title,
@@ -115,6 +119,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
         difficulty: lesson.difficulty,
         duration: lesson.estimated_time,
         xpReward: lesson.xp_reward,
+        orderIndex: lesson.order_index || 0,
         blocks: lesson.blocks || [],
         quiz:
           (quizzesData || [])
@@ -167,6 +172,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
         category: {
           id: lessonData.category_id,
           name: lessonData.categories?.name || 'Unknown',
+          slug: lessonData.categories?.slug || '',
           color: lessonData.categories?.color || '#6E6AE8',
         },
         title: lessonData.title,
@@ -175,6 +181,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
         difficulty: lessonData.difficulty,
         duration: lessonData.estimated_time,
         xpReward: lessonData.xp_reward,
+        orderIndex: lessonData.order_index || 0,
         blocks: lessonData.blocks || [],
         quiz:
           (quizzesData || [])

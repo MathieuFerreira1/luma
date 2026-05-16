@@ -24,7 +24,8 @@ SET
 WHERE id = (SELECT id FROM auth.users WHERE email = 'test@luma.app')
 AND EXISTS (SELECT 1 FROM auth.users WHERE email = 'test@luma.app');
 
--- Marquer 8 leçons comme complétées
+-- Marquer les 2 PREMIÈRES leçons de chaque catégorie comme complétées
+-- Pour simuler une progression réaliste et logique
 INSERT INTO user_progress (user_id, lesson_id, completed, completed_at, xp_earned)
 SELECT 
   u.id,
@@ -36,14 +37,19 @@ FROM auth.users u
 CROSS JOIN lessons l
 WHERE u.email = 'test@luma.app'
   AND l.slug IN (
+    -- Sommeil : 2 premières faites → sleep-nap disponible
     'sleep-cycles', 
     'sleep-caffeine',
-    'nutrition-satiety', 
-    'nutrition-hydration',
-    'brain-dopamine', 
-    'brain-memory',
+    -- Nutrition : 1ère faite → nutrition-microbiome disponible  
+    'nutrition-satiety',
+    -- Brain : 1ère faite → brain-neuroplasticity disponible
+    'brain-dopamine',
+    -- Mouvement : 2 premières faites → movement-warmup disponible
     'movement-cardio', 
-    'movement-walk'
+    'movement-walk',
+    -- Longévité : 2 premières faites → longevity-vitamin-d disponible
+    'longevity-inflammation',
+    'longevity-fasting'
   )
 ON CONFLICT (user_id, lesson_id) DO NOTHING;
 
