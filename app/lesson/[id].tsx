@@ -1,4 +1,4 @@
-import { Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useLocalSearchParams, Stack, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -218,6 +218,7 @@ export default function LessonScreen() {
   const [showReward, setShowReward] = useState(false);
   const [earnedXP, setEarnedXP] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [currentBlockIndex, setCurrentBlockIndex] = useState(0);
 
   useEffect(() => {
     if (id && progress.completedLessons.includes(id)) {
@@ -253,105 +254,148 @@ export default function LessonScreen() {
     }
   };
 
+  const blocks = currentLesson.blocks || [];
+  const currentBlock = blocks[currentBlockIndex];
+  const isLastBlock = currentBlockIndex === blocks.length - 1;
+  const totalSteps = blocks.length + 1; // +1 pour le quiz
+  const currentStep = showQuiz ? totalSteps : currentBlockIndex + 1;
+
+  const handleNextBlock = () => {
+    if (isLastBlock) {
+      setShowQuiz(true);
+    } else {
+      setCurrentBlockIndex((prev) => prev + 1);
+    }
+  };
+
+  const renderCurrentBlock = () => {
+    if (!currentBlock) return null;
+
+    switch (currentBlock.type) {
+      case 'hook':
+        return (
+          <View className="flex-1 items-center justify-center px-4">
+            <Text className="text-brand text-3xl font-bold leading-tight text-center">
+              {currentBlock.content}
+            </Text>
+          </View>
+        );
+      case 'text':
+        return (
+          <View className="flex-1 items-center justify-center px-4">
+            <Text className="text-primary-text text-xl leading-relaxed text-center">
+              {currentBlock.content}
+            </Text>
+          </View>
+        );
+      case 'takeaway':
+        return (
+          <View className="flex-1 items-center justify-center px-4">
+            <View className="bg-sage-green/10 rounded-card p-6 border-l-4 border-sage-green">
+              <Text className="text-sage-green text-4xl text-center mb-4">💡</Text>
+              <Text className="text-primary-text text-xl font-semibold leading-relaxed text-center">
+                {currentBlock.content}
+              </Text>
+            </View>
+          </View>
+        );
+      default:
+        return (
+          <View className="flex-1 items-center justify-center px-4">
+            <Text className="text-secondary-text text-xl text-center">
+              {currentBlock.content}
+            </Text>
+          </View>
+        );
+    }
+  };
+
   return (
     <ScreenContainer>
       <Stack.Screen options={{ headerShown: false }} />
       <SafeAreaView className="flex-1">
-        <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
-          {/* Header */}
-          <View className="flex-row items-center justify-between py-4">
+        {/* Header with progress */}
+        <View className="px-6 pt-4">
+          <View className="flex-row items-center justify-between mb-4">
             <TouchableOpacity onPress={() => router.back()}>
               <FontAwesome name="arrow-left" size={22} color="#1D2235" />
             </TouchableOpacity>
-            <View className="flex-1 mx-4 h-1.5 bg-background rounded-full">
-              <View
-                className="h-full bg-brand rounded-full"
-                style={{ width: showQuiz ? '80%' : '40%' }}
-              />
-            </View>
-          </View>
-
-          {/* Category Badge */}
-          <View className="flex-row items-center gap-2 mb-4">
-            <View
-              className="rounded-pill px-3 py-1"
-              style={{ backgroundColor: `${currentLesson.category.color}30` }}
-            >
-              <Text className="text-primary-text text-xs font-medium">
-                {currentLesson.category.name}
-              </Text>
-            </View>
-            <Text className="text-secondary-text text-xs">
-              {currentLesson.duration} min —{' '}
-              {currentLesson.difficulty === 'beginner' ? 'Débutant' : 'Intermédiaire'}
+            <Text className="text-secondary-text text-sm">
+              {currentStep}/{totalSteps}
             </Text>
           </View>
+          <View className="h-1.5 bg-background rounded-full mb-4">
+            <View
+              className="h-full bg-brand rounded-full"
+              style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+            />
+          </View>
+        </View>
 
+        {/* Main content */}
+        <View className="flex-1 px-6">
           {isCompleted ? (
-            <View className="bg-sage-green/10 rounded-card p-6 mb-6">
-              <Text className="text-sage-green text-lg font-semibold text-center">
-                ✓ Leçon déjà complétée
-              </Text>
+            <View className="flex-1 items-center justify-center">
+              <View className="bg-sage-green/10 rounded-card p-6">
+                <Text className="text-sage-green text-4xl text-center mb-4">✓</Text>
+                <Text className="text-sage-green text-xl font-semibold text-center">
+                  Leçon déjà complétée
+                </Text>
+              </View>
             </View>
           ) : showReward ? (
-            <>
+            <View className="flex-1 items-center justify-center">
               <View className="bg-white rounded-card p-8 shadow-card items-center">
                 <View className="w-20 h-20 bg-brand/10 rounded-full items-center justify-center mb-4">
                   <Text className="text-4xl">⭐</Text>
                 </View>
-
-                <Text className="text-primary-text text-2xl font-bold mb-2">
+                <Text className="text-brand text-4xl font-bold mb-2">
                   +{earnedXP} XP
                 </Text>
-
                 <Text className="text-primary-text text-base text-center mb-6">
                   {currentLesson.blocks.find((b: any) => b.type === 'takeaway')?.content}
                 </Text>
-
-                <TouchableOpacity className="bg-brand rounded-button py-3 px-8" onPress={() => router.replace('/(tabs)/home')}>
+                <TouchableOpacity 
+                  className="bg-brand rounded-button py-3 px-8" 
+                  onPress={() => router.replace('/(tabs)/home')}
+                >
                   <Text className="text-white font-semibold text-base">Continuer</Text>
                 </TouchableOpacity>
               </View>
               <XPRewardAnimation amount={earnedXP} visible={showReward} />
-            </>
-          ) : showQuiz ? (
-            <View className="py-4">
-              <Text className="text-primary-text text-xl font-bold mb-6">
-                Quiz rapide
-              </Text>
-              <QuizRenderer quiz={currentLesson.quiz} onComplete={handleQuizComplete} />
             </View>
-          ) : (
-            <View className="py-4">
-              <Text className="text-primary-text text-2xl font-bold mb-6 leading-tight">
-                {currentLesson.title}
-              </Text>
-
-              {currentLesson.blocks.map((block, index) => (
-                <LessonBlockRenderer key={index} block={block} />
-              ))}
-
-              {/* Light Application Block */}
-              <View className="bg-background rounded-card p-5 mb-6">
-                <Text className="text-primary-text text-sm font-medium mb-2">
-                  💭 Pour essayer
-                </Text>
-                <Text className="text-secondary-text text-sm leading-relaxed">
-                  Vous pouvez essayer de passer quelques minutes dehors demain matin.
+          ) : showQuiz ? (
+            <View className="flex-1">
+              <View className="mb-4">
+                <Text className="text-primary-text text-xl font-bold">
+                  Quiz rapide
                 </Text>
               </View>
+              <View className="flex-1">
+                <QuizRenderer quiz={currentLesson.quiz} onComplete={handleQuizComplete} />
+              </View>
+            </View>
+          ) : (
+            <View className="flex-1">
+              {/* Block content */}
+              <View className="flex-1">
+                {renderCurrentBlock()}
+              </View>
 
-              <TouchableOpacity
-                className="bg-brand rounded-button py-4 items-center shadow-button mb-8"
-                onPress={() => setShowQuiz(true)}
-              >
-                <Text className="text-white font-semibold text-base">
-                  Passer au quiz
-                </Text>
-              </TouchableOpacity>
+              {/* Bottom button */}
+              <View className="pb-8 pt-4">
+                <TouchableOpacity
+                  className="bg-brand rounded-button py-4 items-center shadow-button"
+                  onPress={handleNextBlock}
+                >
+                  <Text className="text-white font-semibold text-base">
+                    {isLastBlock ? 'Passer au quiz' : 'Continuer'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
-        </ScrollView>
+        </View>
       </SafeAreaView>
     </ScreenContainer>
   );
