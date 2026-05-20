@@ -50,7 +50,7 @@ export function TabBarCustom() {
     >
       <View
         style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.92)',
+          backgroundColor: 'rgba(255, 255, 255, 1)',
           borderRadius: 50,
           padding: 4,
           borderWidth: 1,
