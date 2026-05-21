@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link } from 'expo-router';
 import { useEffect } from 'react';
 import { ScreenContainer } from '@/src/components/layout/ScreenContainer';
+import { StreakCard } from '@/src/components/cards/StreakCard';
 import { COLORS } from '@/src/constants/theme';
 import { SectionTitle } from '@/src/components/text/SectionTitle';
 import { useAuthStore } from '@/src/store/authStore';
@@ -63,6 +64,9 @@ export default function HomeScreen() {
               </View>
             </View>
           </View>
+
+          {/* Streak Card */}
+          <StreakCard streak={streak} />
 
           <SectionTitle>Votre découverte du jour</SectionTitle>
 
