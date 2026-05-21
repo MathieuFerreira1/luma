@@ -55,12 +55,18 @@ export default function HomeScreen() {
               <Text className="text-secondary-text text-sm font-medium">Bonjour</Text>
               <Text className="text-primary-text text-xl font-semibold">{displayName}</Text>
             </View>
-            <View className="flex-row items-center gap-3">
-              <View className="bg-card rounded-full px-3 py-1.5 shadow-card">
-                <Text className="text-brand text-sm font-semibold">🔥 {streak}</Text>
+            <View className="items-center">
+              {/* Profile circle */}
+              <View className="w-10 h-10 rounded-full bg-card items-center justify-center border border-secondary-text/20 mb-1">
+                <Text className="text-primary-text text-base font-bold">
+                  {displayName.charAt(0).toUpperCase()}
+                </Text>
               </View>
-              <View className="bg-card rounded-full px-3 py-1.5 shadow-card">
-                <Text className="text-brand text-sm font-semibold">⭐ Niv. {level}</Text>
+              {/* Level pill */}
+              <View className="bg-background rounded-full px-2 py-0.5">
+                <Text className="text-secondary-text text-xs font-bold">
+                  Niv. {level}
+                </Text>
               </View>
             </View>
           </View>
